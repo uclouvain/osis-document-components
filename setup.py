@@ -29,11 +29,11 @@ setup(
     name='OSIS Document components',
     version='1.0.0',
     description='Frontend components and backend utilities for integration with an OSIS-Document server',
-    url='http://github.com/uclouvain/osis-document',
+    url='https://github.com/uclouvain/osis-document-components',
     author='Université catholique de Louvain',
     author_email='O365G-team-osis-dev@groupes.uclouvain.be',
     license='AGPLv3',
-    packages=find_packages(exclude=('osis_document_components.tests',)),
+    packages=find_packages(exclude=('osis_document_components.tests', 'osis_document_components.tests.*',)),
     python_requires=">=3.11",
     include_package_data=True,
     install_requires=[
