@@ -6,7 +6,7 @@
 #    The core business involves the administration of students, teachers,
 #    courses, programs and so on.
 #
-#    Copyright (C) 2015-2021 Université catholique de Louvain (http://www.uclouvain.be)
+#    Copyright (C) 2015-2025 Université catholique de Louvain (http://www.uclouvain.be)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -35,5 +35,5 @@ class OsisDocumentComponentsConfig(AppConfig):
     def ready(self):
         # Add FileFieldSerializer the default_serializer_mapping
         from osis_document_components.fields import FileField
-        from osis_document_components.serializers import FileField as FileSerializer
+        from osis_document_components.serializers import FileField as FileFieldSerializer
         ModelSerializer.serializer_field_mapping[FileField] = FileFieldSerializer

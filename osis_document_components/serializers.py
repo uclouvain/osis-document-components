@@ -26,7 +26,7 @@
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
-from osis_document.validators import TokenValidator
+from osis_document_components.validators import TokenValidator
 
 
 class FileField(serializers.ListField):

@@ -23,6 +23,7 @@
 #    see http://www.gnu.org/licenses/.
 #
 # ##############################################################################
+import uuid
 from unittest.mock import patch
 
 from django.core.exceptions import ImproperlyConfigured

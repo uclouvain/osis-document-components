@@ -29,6 +29,7 @@ from unittest.mock import Mock, patch
 from django import forms
 from django.test import TestCase, override_settings
 from osis_document_components.forms import FileUploadField, TokenField
+from osis_document_components.tests.factories import TokenFactory
 
 
 @override_settings(OSIS_DOCUMENT_BASE_URL='http://dummyurl.com/document/')

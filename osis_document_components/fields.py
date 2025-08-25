@@ -123,7 +123,7 @@ class FileField(ArrayField):
         previous_values: List[UUID],
     ):
         """Call the remote API to confirm multiple upload and delete old file if replaced"""
-        files_confirmed = [token for token in attvalues if not isinstance(token, str)]  # UUID
+        files_confirmed = [token for token in attvalues if not isinstance(token, str)]  # type: List[UUID]
         files_to_keep = getattr(model_instance, '_files_to_keep', [])
 
         tokens = [token for token in attvalues if isinstance(token, str)]

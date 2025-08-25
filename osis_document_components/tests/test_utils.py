@@ -23,10 +23,15 @@
 #    see http://www.gnu.org/licenses/.
 #
 # ##############################################################################
-from django.test import TestCase
-from osis_document_components.tests.factories import TokenFactory
+import uuid
+from datetime import date
+from unittest.mock import patch
 
+from django.test import TestCase
+
+from osis_document_components.tests.factories import TokenFactory
 from osis_document_components.utils import is_uuid, generate_filename
+
 
 class IsUuidTestCase(TestCase):
     def test_is_uuid_case_token_format_assert_false(self):

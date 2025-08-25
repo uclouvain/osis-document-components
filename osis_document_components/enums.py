@@ -29,3 +29,15 @@ from enum import Enum
 class DocumentExpirationPolicy(Enum):
     NO_EXPIRATION = None
     EXPORT_EXPIRATION_POLICY = "EXPORT_EXPIRATION_POLICY"
+
+
+class PostProcessingWanted(Enum):
+    MERGE = 'MERGE'
+    CONVERT = 'CONVERT'
+    ORIGINAL = 'ORIGINAL'
+
+
+class PostProcessingStatus(Enum):
+    PENDING = 'PENDING'
+    FAILED = 'FAILED'
+    DONE = 'DONE'

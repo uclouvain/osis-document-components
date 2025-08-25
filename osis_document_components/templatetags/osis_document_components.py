@@ -69,7 +69,6 @@ def document_visualizer(values, wanted_post_process=None, for_modified_upload=Fa
 
 @register.inclusion_tag('osis_document_components/editor.html')
 def document_editor(value, for_modified_upload=False, **attrs):
-    from osis_document_components.api.utils import get_remote_token
     return {
         'value': osis_document_services.get_remote_token(
             value,

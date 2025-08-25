@@ -23,13 +23,24 @@
 #    see http://www.gnu.org/licenses/.
 #
 # ##############################################################################
-import requests
 import contextlib
-
 from typing import Union, List, Dict, Iterable, Optional
+from uuid import UUID
+
+import requests
+from requests import HTTPError
 from django.conf import settings
-from osis_document_components.exceptions import  SaveRawContentRemotelyException, FileInfectedException, \
+
+from osis_document_components.enums import DocumentExpirationPolicy
+from osis_document_components.exceptions import SaveRawContentRemotelyException, FileInfectedException, \
     UploadInvalidException
+
+HTTP_200_OK = 200
+HTTP_204_NO_CONTENT = 204
+HTTP_201_CREATED = 201
+HTTP_404_NOT_FOUND = 404
+HTTP_500_INTERNAL_SERVER_ERROR = 500
+HTTP_206_PARTIAL_CONTENT = 206
 
 
 def save_raw_content_remotely(content: bytes, name: str, mimetype: str):
@@ -48,7 +59,7 @@ def get_raw_content_remotely(token: str):
     """Given a token, return the file raw."""
     try:
         response = requests.get(f"{settings.OSIS_DOCUMENT_BASE_URL}file/{token}")
-        if response.status_code is not status.HTTP_200_OK:
+        if response.status_code is not HTTP_200_OK:
             return None
         return response.content
     except HTTPError:
@@ -60,7 +71,7 @@ def get_remote_metadata(token: str) -> Union[dict, None]:
     url = "{}metadata/{}".format(settings.OSIS_DOCUMENT_BASE_URL, token)
     try:
         response = requests.get(url)
-        if response.status_code is not status.HTTP_200_OK:
+        if response.status_code is not HTTP_200_OK:
             return None
         return response.json()
     except HTTPError:
@@ -77,7 +88,7 @@ def get_several_remote_metadata(tokens: List[str]) -> Dict[str, dict]:
             headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
         )
 
-        if response.status_code == status.HTTP_200_OK:
+        if response.status_code == HTTP_200_OK:
             return response.json()
     except HTTPError:
         pass
@@ -97,7 +108,7 @@ def get_remote_token(
     The wanted_post_process parameter is used to specify which post-processing action you want the output files for
     (example : PostProcessingWanted.CONVERT.name)
     """
-    is_valid_uuid = stringify_uuid_and_check_uuid_validity(uuid_input=uuid)
+    is_valid_uuid = __stringify_uuid_and_check_uuid_validity(uuid_input=uuid)
     if not is_valid_uuid.get('uuid_valid'):
         return None
     else:
@@ -118,11 +129,11 @@ def get_remote_token(
                 },
                 headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
             )
-            if response.status_code == status.HTTP_404_NOT_FOUND:
+            if response.status_code == HTTP_404_NOT_FOUND:
                 return UploadInvalidException.__class__.__name__
             json = response.json()
             if (
-                response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+                response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
                 and json.get('detail', '') == FileInfectedException.error_code
             ):
                 return FileInfectedException.__class__.__name__
@@ -145,7 +156,7 @@ def get_remote_tokens(
     """
     validated_uuids = []
     for uuid in uuids:
-        is_valid_uuid = stringify_uuid_and_check_uuid_validity(uuid_input=uuid)
+        is_valid_uuid = __stringify_uuid_and_check_uuid_validity(uuid_input=uuid)
         if is_valid_uuid.get('uuid_valid'):
             validated_uuids.append(is_valid_uuid.get('uuid_stringify'))
     if len(uuids) != len(validated_uuids):
@@ -162,9 +173,9 @@ def get_remote_tokens(
             json=data,
             headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
         )
-        if response.status_code == status.HTTP_201_CREATED:
+        if response.status_code == HTTP_201_CREATED:
             return {uuid: item.get('token') for uuid, item in response.json().items() if 'error' not in item}
-        if response.status_code in [status.HTTP_206_PARTIAL_CONTENT, status.HTTP_500_INTERNAL_SERVER_ERROR]:
+        if response.status_code in [HTTP_206_PARTIAL_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR]:
             return response.json()
     return {}
 
@@ -189,7 +200,7 @@ def documents_remote_duplicate(
 
     # Check the validity of the uuids
     for document_uuid in uuids:
-        is_valid_uuid = stringify_uuid_and_check_uuid_validity(uuid_input=document_uuid)
+        is_valid_uuid = __stringify_uuid_and_check_uuid_validity(uuid_input=document_uuid)
         if is_valid_uuid.get('uuid_valid'):
             validated_uuids.append(is_valid_uuid.get('uuid_stringify'))
 
@@ -209,7 +220,7 @@ def documents_remote_duplicate(
             headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
         )
 
-        if response.status_code == status.HTTP_201_CREATED:
+        if response.status_code == HTTP_201_CREATED:
             return {
                 original_uuid: item['upload_id']
                 for original_uuid, item in response.json().items()
@@ -282,7 +293,7 @@ def declare_remote_files_as_deleted(uuid_list: Iterable[UUID]):
         json=data,
         headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
     )
-    if response.status_code != status.HTTP_204_NO_CONTENT:
+    if response.status_code != HTTP_204_NO_CONTENT:
         import logging
 
         logger = logging.getLogger(settings.DEFAULT_LOGGER)
@@ -317,3 +328,26 @@ def change_remote_metadata(token, metadata):
         headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
     )
     return response.json()
+
+
+def __stringify_uuid_and_check_uuid_validity(uuid_input: Union[str, UUID]) -> Dict[str, Union[str, bool]]:
+    """
+    Checks the validity of an uuid and converts it to a string if necessary
+    """
+    results = {
+        'uuid_valid': False,
+        'uuid_stringify': '',
+    }
+    if isinstance(uuid_input, str):
+        try:
+            UUID(uuid_input)
+            results['uuid_valid'] = True
+            results['uuid_stringify'] = uuid_input
+        except ValueError:
+            results['valid'] = False
+    elif isinstance(uuid_input, UUID):
+        results['uuid_valid'] = True
+        results['uuid_stringify'] = str(uuid_input)
+    else:
+        raise TypeError
+    return results

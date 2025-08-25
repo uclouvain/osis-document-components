@@ -28,6 +28,7 @@ from django.conf import settings
 from django.contrib.postgres.forms import SplitArrayField
 from django.utils.translation import gettext_lazy as _
 
+from osis_document_components.utils import is_uuid
 from osis_document_components.widgets import FileUploadWidget, HiddenFileWidget
 from osis_document_components import services as osis_document_services
 from osis_document_components.validators import TokenValidator
