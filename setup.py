@@ -26,7 +26,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='OSIS Document components',
+    name='osis-document-components',
     version='1.0.0',
     description='Frontend components and backend utilities for integration with an OSIS-Document server',
     url='https://github.com/uclouvain/osis-document-components',
