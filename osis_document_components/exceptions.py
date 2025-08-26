@@ -40,3 +40,7 @@ class UploadInvalidException(OSISDocumentAPICallException):
 
 class FileInfectedException(OSISDocumentAPICallException):
     error_code = "INFECTED"
+
+
+class InvalidPostProcessorAction(OSISDocumentAPICallException):
+    error_code = "INVALID_POSTPROCESSOR_ACTION"

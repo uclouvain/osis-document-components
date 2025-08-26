@@ -31,6 +31,11 @@ class DocumentExpirationPolicy(Enum):
     EXPORT_EXPIRATION_POLICY = "EXPORT_EXPIRATION_POLICY"
 
 
+class PostProcessingType(Enum):
+    MERGE = "MERGE"
+    CONVERT = "CONVERT"
+
+
 class PostProcessingWanted(Enum):
     MERGE = 'MERGE'
     CONVERT = 'CONVERT'
