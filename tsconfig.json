@@ -10,7 +10,7 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "preserveValueImports": true,
+    "verbatimModuleSyntax": true,
     "strictBindCallApply": true,
     "jsx": "preserve",
     "lib": [

@@ -183,7 +183,6 @@
 /**
  * This component's goal is to view an uploaded file and edit it
  */
-import { useI18n } from 'vue-i18n';
 import {doRequest, humanizedSize} from '../utils';
 import ViewingModal from './ViewingModal.vue';
 import {defineComponent} from 'vue';

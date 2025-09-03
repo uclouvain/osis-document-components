@@ -127,7 +127,6 @@
 /**
  * This component goal is to upload a local file and emit a token
  */
-import { useI18n } from 'vue-i18n';
 import {humanizedSize} from '../utils';
 import EventBus from '../event-bus';
 import {defineComponent} from 'vue';

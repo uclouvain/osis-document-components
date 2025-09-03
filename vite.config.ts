@@ -1,20 +1,20 @@
 /// <reference types="vitest" />
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+import vueI18n from '@intlify/unplugin-vue-i18n/vite';
 import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    VueI18nPlugin({
-      include: [path.resolve(__dirname, './frontend/locales/**')],
+    vueI18n({
+      include: [path.resolve(__dirname, 'frontend/locales/**')],
     }),
   ],
   mode: 'production',
   define: {
-    'process.env.NODE_ENV': process.env.NODE_ENV === 'test' ? '"test"' : '"production"',
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
   },
   build: {
     emptyOutDir: false,
