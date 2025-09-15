@@ -38,6 +38,6 @@ setup(
     include_package_data=True,
     install_requires=[
         'requests>=2.20.0,<3.0',
-        'djangorestframework==3.15.2',
+        'djangorestframework',
     ]
 )
