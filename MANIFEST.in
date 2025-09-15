@@ -1,0 +1,3 @@
+recursive-include osis_document_components/static *
+recursive-include osis_document_components/templates *
+recursive-include osis_document_components/locale *
