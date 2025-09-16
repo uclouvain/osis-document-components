@@ -124,7 +124,6 @@ import {EventBus, PDFViewer} from "pdfjs-dist/web/pdf_viewer";
 import "pdfjs-dist/web/pdf_viewer.css";
 import type {PDFPageView} from "pdfjs-dist/types/web/pdf_page_view";
 import type {FileUpload, TokenReponse} from "./interfaces";
-import {i18n} from "./i18n";
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/static/pdfjs/pdf.worker.min.js';
 
@@ -135,10 +134,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = '/static/pdfjs/pdf.worker.min.js';
 export default defineComponent({
   name: 'DocumentEditor',
   components: {ToolbarPagination, ToolbarRotation, ToolbarZoom, ToolbarAnnotation},
-  setup: (props, ctx) => {
-    const t = i18n.global.t;
-    return { t }
-  },
   props: {
     value: {
       type: String,

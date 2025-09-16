@@ -64,9 +64,6 @@
 </template>
 
 <script setup lang="ts">
-import {i18n} from "../i18n";
-const t = i18n.global.t;
-
 defineProps<{
   isActivated: boolean,
   color: string,

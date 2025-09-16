@@ -19,15 +19,10 @@
 import ViewEntry from './components/ViewEntry.vue';
 import type {PropType} from 'vue';
 import {defineComponent} from 'vue';
-import {i18n} from "./i18n";
 
 export default defineComponent({
   name: 'DocumentVisualizer',
   components: {ViewEntry},
-  setup: (props, ctx) => {
-    const t = i18n.global.t;
-    return { t };
-  },
   props: {
     baseUrl: {
       type: String,

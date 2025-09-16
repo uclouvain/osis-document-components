@@ -134,14 +134,9 @@ import type {ErrorReponse, TokenReponse} from "../interfaces";
 import Cropper from 'cropperjs';
 
 import 'cropperjs/dist/cropper.min.css';
-import {i18n} from "../i18n";
 
 export default defineComponent({
   name: 'UploadEntry',
-  setup: (props, ctx) => {
-    const t = i18n.global.t;
-    return { t };
-  },
   props: {
     file: {
       type: File,
