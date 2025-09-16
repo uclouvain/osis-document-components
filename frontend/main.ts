@@ -51,6 +51,8 @@ interface VisualizerProps extends Record<string, unknown> {
   wantedPostProcess: string,
 }
 
+(window as any).i18n = i18n;
+
 function initDocumentComponents() {
   document.querySelectorAll<HTMLElement>('.osis-document-uploader:not([data-v-app])').forEach((elem) => {
     const props: UploaderProps = {baseUrl: "", ...elem.dataset};
@@ -83,7 +85,6 @@ function initDocumentComponents() {
     }
     const appInstance = createApp(Uploader, props);
     appInstance.use(i18n);
-    i18n.global.locale.value = document.documentElement.lang || 'en';
     appInstance.mount(elem);
   });
 
@@ -106,7 +107,6 @@ function initDocumentComponents() {
     }
     const appInstance = createApp(Visualizer, props);
     appInstance.use(i18n);
-    i18n.global.locale.value = document.documentElement.lang || 'en';
     appInstance.mount(elem);
   });
 }
