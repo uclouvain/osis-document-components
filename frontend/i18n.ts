@@ -32,7 +32,6 @@ export const i18n = createI18n({
   legacy: false,
   locale: document.documentElement.lang || 'en',
   allowComposition: true,
-  globalInjection: true,
   messages: {
     en,
     fr,
