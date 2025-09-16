@@ -84,8 +84,7 @@ function initDocumentComponents() {
     createApp(Uploader, props).use(i18n).mount(elem);
     console.log("MONTAGE LANGUE")
     console.log(i18n.global.availableLocales);
-    console.log(i18n.global.getLocaleMessage(i18n.global.locale.value));
-
+    console.log(i18n.global.getLocaleMessage('en'));
   });
 
   document.querySelectorAll<HTMLElement>('.osis-document-visualizer:not([data-v-app])').forEach((elem) => {
