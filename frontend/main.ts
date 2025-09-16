@@ -81,10 +81,10 @@ function initDocumentComponents() {
     if (typeof elem.dataset.croppingOptions !== 'undefined') {
       props.croppingOptions = JSON.parse(elem.dataset.croppingOptions);
     }
-    createApp(Uploader, props).use(i18n).mount(elem);
-    console.log("MONTAGE LANGUE")
-    console.log(i18n.global.availableLocales);
-    console.log(i18n.global.getLocaleMessage('en'));
+    const appInstance = createApp(Uploader, props);
+    appInstance.use(i18n);
+    i18n.global.locale.value = document.documentElement.lang || 'en';
+    appInstance.mount(elem);
   });
 
   document.querySelectorAll<HTMLElement>('.osis-document-visualizer:not([data-v-app])').forEach((elem) => {
@@ -104,7 +104,10 @@ function initDocumentComponents() {
     if (typeof elem.dataset.wantedPostProcess !== 'undefined') {
       props.wantedPostProcess = elem.dataset.wantedPostProcess;
     }
-    createApp(Visualizer, props).use(i18n).mount(elem);
+    const appInstance = createApp(Visualizer, props);
+    appInstance.use(i18n);
+    i18n.global.locale.value = document.documentElement.lang || 'en';
+    appInstance.mount(elem);
   });
 }
 
