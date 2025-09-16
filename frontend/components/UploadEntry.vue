@@ -140,8 +140,7 @@ export default defineComponent({
   name: 'UploadEntry',
   setup: (props, ctx) => {
     const t = i18n.global.t;
-    const tc = i18n.global.tc;
-    return { t, tc };
+    return { t };
   },
   props: {
     file: {
@@ -214,7 +213,7 @@ export default defineComponent({
     if (this.maxSize && this.file.size > this.maxSize) {
       this.error = this.t('upload_entry.too_large');
     } else if (this.mimetypes.length && !this.mimetypes.includes(this.file.type)) {
-      this.error = this.tc('upload_entry.wrong_type', this.mimetypes.length, {types: this.mimetypes.join(', ')});
+      this.error = this.t('upload_entry.wrong_type', this.mimetypes.length, {types: this.mimetypes.join(', ')});
     } else if (this.automatic && !this.withCropping) {
       this.sendFile();
     } else if (!this.withCropping) {

@@ -159,7 +159,6 @@ describe('must return the right drag-and-drop label', () => {
       mocks: {
         // use real i18n
         $t: i18n.global.t,
-        $tc: i18n.global.tc,
       },
     },
   });

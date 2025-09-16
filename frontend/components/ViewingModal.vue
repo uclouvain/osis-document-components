@@ -153,8 +153,7 @@ export default defineComponent({
   name: 'ViewingModal',
   setup: (props, ctx) => {
     const t = i18n.global.t
-    const tc = i18n.global.tc
-    return { t, tc };
+    return { t };
   },
   props: {
     baseUrl: {

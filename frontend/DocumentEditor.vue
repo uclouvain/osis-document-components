@@ -137,6 +137,7 @@ export default defineComponent({
   components: {ToolbarPagination, ToolbarRotation, ToolbarZoom, ToolbarAnnotation},
   setup: (props, ctx) => {
     const t = i18n.global.t;
+    return { t }
   },
   props: {
     value: {
