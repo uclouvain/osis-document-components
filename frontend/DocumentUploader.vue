@@ -112,6 +112,7 @@ import UploadEntry from './components/UploadEntry.vue';
 import ViewEntry from './components/ViewEntry.vue';
 import EventBus from './event-bus';
 import {defineComponent} from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const EVENT_NAMESPACE = 'osisdocument:';
 const ADD_EVENT = 'add';
@@ -120,6 +121,10 @@ const DELETE_EVENT = 'delete';
 export default defineComponent({
   name: 'DocumentUploader',
   components: {UploadEntry, ViewEntry},
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     name: {
       type: String,

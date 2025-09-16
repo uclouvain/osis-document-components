@@ -112,6 +112,7 @@
 
 <script lang="ts">
 import {defineComponent, markRaw, toRaw} from 'vue';
+import { useI18n } from 'vue-i18n';
 import ToolbarAnnotation from "./components/ToolbarAnnotation.vue";
 import ToolbarZoom from "./components/ToolbarZoom.vue";
 import ToolbarRotation from "./components/ToolbarRotation.vue";
@@ -134,6 +135,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = '/static/pdfjs/pdf.worker.min.js';
 export default defineComponent({
   name: 'DocumentEditor',
   components: {ToolbarPagination, ToolbarRotation, ToolbarZoom, ToolbarAnnotation},
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     value: {
       type: String,

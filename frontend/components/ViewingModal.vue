@@ -145,11 +145,16 @@
 <script lang="ts">
 import {defineComponent, nextTick} from 'vue';
 import type {PropType} from 'vue';
+import { useI18n } from 'vue-i18n';
 import type {FileUpload, TokenReponse} from '../interfaces';
 import {doRequest} from "../utils";
 
 export default defineComponent({
   name: 'ViewingModal',
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     baseUrl: {
       type: String,

@@ -134,9 +134,14 @@ import type {ErrorReponse, TokenReponse} from "../interfaces";
 import Cropper from 'cropperjs';
 
 import 'cropperjs/dist/cropper.min.css';
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: 'UploadEntry',
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     file: {
       type: File,

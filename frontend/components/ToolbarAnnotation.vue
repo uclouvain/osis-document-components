@@ -64,6 +64,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 defineProps<{
   isActivated: boolean,
   color: string,
@@ -74,6 +76,8 @@ defineProps<{
 defineEmits<{
   (e: 'onChange', color: string): void,
 }>();
+const { t } = useI18n();
+
 </script>
 
 <style lang="scss">

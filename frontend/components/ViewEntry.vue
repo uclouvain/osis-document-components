@@ -186,12 +186,17 @@
 import {doRequest, humanizedSize} from '../utils';
 import ViewingModal from './ViewingModal.vue';
 import {defineComponent} from 'vue';
+import { useI18n } from 'vue-i18n';
 import type {FileUpload, GetRemoteTokenResponse, PostProcessingProgressResult} from "../interfaces";
 
 
 export default defineComponent({
   name: 'ViewEntry',
   components: {ViewingModal},
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     value: {
       type: String,
