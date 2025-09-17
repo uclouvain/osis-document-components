@@ -10,6 +10,8 @@ export default defineConfig({
     vue(),
     vueI18n({
       include: [path.resolve(__dirname, 'frontend/locales/**')],
+      runtimeOnly: false,
+      compositionOnly: true,
     }),
   ],
   mode: 'production',
@@ -27,12 +29,11 @@ export default defineConfig({
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled into library
-      external: ['vue', 'vue-i18n', '@vue/runtime-dom'],
+      external: ['vue', '@vue/runtime-dom'],
       output: {
         // Provide global variables to use in the UMD build for externalized deps
         globals: {
           vue: 'Vue',
-          'vue-i18n': 'VueI18n',
           '@vue/runtime-dom': 'Vue',
         },
         entryFileNames: (chunkInfo) => {
