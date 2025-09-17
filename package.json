@@ -19,6 +19,7 @@
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
     "@storybook/addon-interactions": "^9.0.0-alpha.10",
     "@storybook/cli": "^9.1.4",
+    "storybook-i18n": "^4.0.5",
     "@types/bootstrap": "^3.4.0",
     "@types/fetch-mock": "^7.3.5",
     "@types/jquery": "^3.5.16",

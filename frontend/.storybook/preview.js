@@ -23,8 +23,42 @@
  *   see http://www.gnu.org/licenses/.
  *
  */
+import {i18n} from '../i18n';
+import { setup } from '@storybook/vue3-vite';
+
+setup((app) => {
+  app.use(i18n);
+});
+
+export const globalTypes = {
+  locale: {
+    name: 'Locale',
+    description: 'Langue d\'affichage',
+    toolbar: {
+      icon: 'globe',
+      items: [
+        { value: 'fr', right: '🇫🇷', title: 'Français' },
+        { value: 'en', right: '🇺🇸', title: 'English' }
+      ],
+      showName: true,
+      dynamicTitle: true
+    },
+  },
+};
+
+const withI18n = (story, context) => {
+  const { locale } = context.globals;
+  if (locale) {
+    i18n.global.locale.value = locale;
+  }
+  return story();
+};
 
 const preview = {
+    initialGlobals: {
+        locale: "fr",
+    },
+    decorators: [withI18n],
     parameters: {
         actions: {argTypesRegex: '^on[A-Z].*'},
         controls: {
