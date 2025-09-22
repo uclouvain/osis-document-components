@@ -232,6 +232,7 @@ def documents_remote_duplicate(
 def confirm_remote_upload(
     token,
     upload_to=None,
+    metadata=None,
     document_expiration_policy=DocumentExpirationPolicy.NO_EXPIRATION.value,
     related_model=None,
     related_model_instance=None,
@@ -254,6 +255,8 @@ def confirm_remote_upload(
 
     if document_expiration_policy:
         data['document_expiration_policy'] = document_expiration_policy
+    if metadata:
+        data['metadata'] = metadata
 
     # Do the request
     response = requests.post(

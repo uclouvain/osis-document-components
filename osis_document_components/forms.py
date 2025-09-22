@@ -88,6 +88,7 @@ class FileUploadField(SplitArrayField):
         self.max_files = kwargs.pop('max_files', None)
         self.min_files = kwargs.pop('min_files', None)
         self.upload_to = kwargs.pop('upload_to', None)
+        self.build_metadata_fn = kwargs.pop('build_metadata_fn', lambda *args, **kwargs: None)
         self.related_model = kwargs.pop('related_model', None)
         self.post_processing = kwargs.pop('post_processing', [])
         self.async_post_processing = kwargs.pop('async_post_processing', False)
@@ -146,6 +147,7 @@ class FileUploadField(SplitArrayField):
             osis_document_services.confirm_remote_upload(
                 token=token,
                 upload_to=self.upload_to,
+                metadata=self.build_metadata_fn(values),
                 related_model=self.related_model,
                 related_model_instance=related_model_instance,
             )
