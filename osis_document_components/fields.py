@@ -139,6 +139,7 @@ class FileField(ArrayField):
                     'client_info': {
                         **self.build_metadata_fn(model_instance, self.attname),
                         'model': self.model.__name__,
+                        'pk': str(model_instance.pk),
                         'attribute': self.attname,
                         '_confirm_method': 'FileField',
                     }
