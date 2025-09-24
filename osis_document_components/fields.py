@@ -56,7 +56,7 @@ class FileField(ArrayField):
         self.max_files = kwargs.pop('max_files', None)
         self.min_files = kwargs.pop('min_files', None)
         self.upload_to = kwargs.pop('upload_to', '')
-        self.build_metadata_fn = kwargs.pop('build_metadata_fn', lambda *args, **kwargs: None)
+        self.build_metadata_fn = kwargs.pop('build_metadata_fn', lambda *args, **kwargs: {})
         self.post_processing = kwargs.pop('post_processing', [])
         self.async_post_processing = kwargs.pop('async_post_processing', False)
         self.output_post_processing = kwargs.pop('output_post_processing', None)
@@ -135,7 +135,13 @@ class FileField(ArrayField):
             file_uuid = osis_document_services.confirm_remote_upload(
                 token=token,
                 upload_to=dirname(generate_filename(model_instance, filename, self.upload_to)),
-                metadata=self.build_metadata_fn(model_instance, self.attname),
+                metadata={
+                    'client_info': {
+                        **self.build_metadata_fn(model_instance, self.attname),
+                        'model': self.model.__name__,
+                        'attribute': self.attname,
+                    }
+                },
                 document_expiration_policy=self.document_expiration_policy,
             )
             files_confirmed.append(UUID(file_uuid))
