@@ -140,6 +140,7 @@ class FileField(ArrayField):
                         **self.build_metadata_fn(model_instance, self.attname),
                         'model': self.model.__name__,
                         'attribute': self.attname,
+                        '_confirm_method': 'FileField',
                     }
                 },
                 document_expiration_policy=self.document_expiration_policy,

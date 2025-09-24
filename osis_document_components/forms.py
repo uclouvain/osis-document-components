@@ -147,7 +147,12 @@ class FileUploadField(SplitArrayField):
             osis_document_services.confirm_remote_upload(
                 token=token,
                 upload_to=self.upload_to,
-                metadata=self.build_metadata_fn(values),
+                metadata={
+                    'client_info': {
+                        **self.build_metadata_fn(values),
+                        '_confirm_method': 'FileUploadField',
+                    }
+                },
                 related_model=self.related_model,
                 related_model_instance=related_model_instance,
             )
