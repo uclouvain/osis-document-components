@@ -76,6 +76,10 @@ class FileField(ArrayField):
         if self.min_files and not self.blank and not self.null:
             self.default_validators = [*self.default_validators, ArrayMinLengthValidator(self.min_files)]
 
+    def get_internal_type(self):
+        """ It defaults to the class name, and FileField is an already existing django field """
+        return "OsisDocumentFileField"
+
     def formfield(self, **kwargs):
         """Transfer all properties to the form field"""
         return super(ArrayField, self).formfield(
