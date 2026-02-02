@@ -6,7 +6,7 @@
 #    The core business involves the administration of students, teachers,
 #    courses, programs and so on.
 #
-#    Copyright (C) 2015-2025 Université catholique de Louvain (http://www.uclouvain.be)
+#    Copyright (C) 2015-2026 Université catholique de Louvain (http://www.uclouvain.be)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -23,17 +23,17 @@
 #    see http://www.gnu.org/licenses/.
 #
 # ##############################################################################
-import contextlib
 from typing import Union, List, Dict, Iterable, Optional
 from uuid import UUID
 
 import requests
-from requests import HTTPError
 from django.conf import settings
+from requests import HTTPError, Timeout
 
 from osis_document_components.enums import DocumentExpirationPolicy
 from osis_document_components.exceptions import SaveRawContentRemotelyException, FileInfectedException, \
-    UploadInvalidException
+    UploadInvalidException, OsisDocumentTimeout
+
 
 HTTP_200_OK = 200
 HTTP_204_NO_CONTENT = 204
@@ -49,7 +49,15 @@ def save_raw_content_remotely(content: bytes, name: str, mimetype: str):
     data = {'file': (name, content, mimetype)}
 
     # Create the request
-    response = requests.post(url, files=data)
+    try:
+        response = requests.post(
+            url,
+            files=data,
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_SAVE_RAW_CONTENT_REMOTELY_TIMEOUT
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
+
     if response.status_code != 201:
         raise SaveRawContentRemotelyException(response)
     return response.json().get('token')
@@ -58,24 +66,33 @@ def save_raw_content_remotely(content: bytes, name: str, mimetype: str):
 def get_raw_content_remotely(token: str):
     """Given a token, return the file raw."""
     try:
-        response = requests.get(f"{settings.OSIS_DOCUMENT_BASE_URL}file/{token}")
-        if response.status_code is not HTTP_200_OK:
-            return None
-        return response.content
+        response = requests.get(
+            f"{settings.OSIS_DOCUMENT_BASE_URL}file/{token}",
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_RAW_CONTENT_REMOTELY_TIMEOUT
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     except HTTPError:
         return None
+
+    if response.status_code is not HTTP_200_OK:
+        return None
+    return response.content
 
 
 def get_remote_metadata(token: str) -> Union[dict, None]:
     """Given a token, return the remote metadata."""
     url = "{}metadata/{}".format(settings.OSIS_DOCUMENT_BASE_URL, token)
     try:
-        response = requests.get(url)
-        if response.status_code is not HTTP_200_OK:
-            return None
-        return response.json()
+        response = requests.get(url, timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_METADATA_TIMEOUT)
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     except HTTPError:
         return None
+
+    if response.status_code is not HTTP_200_OK:
+        return None
+    return response.json()
 
 
 def get_several_remote_metadata(tokens: List[str]) -> Dict[str, dict]:
@@ -86,10 +103,12 @@ def get_several_remote_metadata(tokens: List[str]) -> Dict[str, dict]:
             url,
             json=tokens,
             headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_METADATA_TIMEOUT,
         )
-
         if response.status_code == HTTP_200_OK:
             return response.json()
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     except HTTPError:
         pass
     return {}
@@ -128,16 +147,19 @@ def get_remote_token(
                     'for_modified_upload': for_modified_upload,
                 },
                 headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+                timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_TOKEN_TIMEOUT,
             )
             if response.status_code == HTTP_404_NOT_FOUND:
                 return UploadInvalidException.__class__.__name__
             json = response.json()
             if (
-                response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-                and json.get('detail', '') == FileInfectedException.error_code
+                    response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+                    and json.get('detail', '') == FileInfectedException.error_code
             ):
                 return FileInfectedException.__class__.__name__
             return json.get('token') or json
+        except Timeout as exc:
+            raise OsisDocumentTimeout(str(exc)) from exc
         except HTTPError:
             return None
 
@@ -162,7 +184,7 @@ def get_remote_tokens(
     if len(uuids) != len(validated_uuids):
         raise TypeError
     url = "{base_url}read-tokens".format(base_url=settings.OSIS_DOCUMENT_BASE_URL)
-    with contextlib.suppress(HTTPError):
+    try:
         data = {'uuids': validated_uuids, 'for_modified_upload': for_modified_upload}
         if wanted_post_process:
             data.update({'wanted_post_process': wanted_post_process})
@@ -172,11 +194,16 @@ def get_remote_tokens(
             url,
             json=data,
             headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_TOKEN_TIMEOUT,
         )
         if response.status_code == HTTP_201_CREATED:
             return {uuid: item.get('token') for uuid, item in response.json().items() if 'error' not in item}
         if response.status_code in [HTTP_206_PARTIAL_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR]:
             return response.json()
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
+    except HTTPError:
+        pass
     return {}
 
 
@@ -208,8 +235,7 @@ def documents_remote_duplicate(
         raise TypeError
 
     url = "{base_url}duplicate".format(base_url=settings.OSIS_DOCUMENT_BASE_URL)
-
-    with contextlib.suppress(HTTPError):
+    try:
         response = requests.post(
             url,
             json={
@@ -218,6 +244,7 @@ def documents_remote_duplicate(
                 'upload_path_by_uuid': upload_path_by_uuid,
             },
             headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_DOCUMENTS_REMOTE_DUPLICATE_TIMEOUT
         )
 
         if response.status_code == HTTP_201_CREATED:
@@ -226,6 +253,10 @@ def documents_remote_duplicate(
                 for original_uuid, item in response.json().items()
                 if 'upload_id' in item
             }
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
+    except HTTPError:
+        pass
     return {}
 
 
@@ -258,12 +289,16 @@ def confirm_remote_upload(
     if metadata:
         data['metadata'] = metadata
 
-    # Do the request
-    response = requests.post(
-        url,
-        json=data,
-        headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
-    )
+    try:
+        # Do the request
+        response = requests.post(
+            url,
+            json=data,
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_CONFIRM_REMOTE_UPLOAD_TIMEOUT,
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     return response.json().get('uuid')
 
 
@@ -280,27 +315,37 @@ def launch_post_processing(
         'files_uuid': uuid_list,
         'post_process_params': post_process_params,
     }
-    response = requests.post(
-        url,
-        json=data,
-        headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
-    )
+    try:
+        response = requests.post(
+            url,
+            json=data,
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_LAUNCH_POST_PROCESSING_TIMEOUT,
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     return response.json() if not async_post_processing else response
 
 
 def declare_remote_files_as_deleted(uuid_list: Iterable[UUID]):
     url = "{}declare-files-as-deleted".format(settings.OSIS_DOCUMENT_BASE_URL)
     data = {'files': [str(uuid) for uuid in uuid_list]}
-    response = requests.post(
-        url,
-        json=data,
-        headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
-    )
-    if response.status_code != HTTP_204_NO_CONTENT:
-        import logging
+    try:
+        response = requests.post(
+            url,
+            json=data,
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_DECLARE_REMOTE_FILES_AS_DELETED_TIMEOUT,
+        )
 
+        if response.status_code != HTTP_204_NO_CONTENT:
+            import logging
+            logger = logging.getLogger(settings.DEFAULT_LOGGER)
+            logger.error("An error occured when calling declare-files-as-deleted: {}".format(response.text))
+    except Timeout as exc:
+        import logging
         logger = logging.getLogger(settings.DEFAULT_LOGGER)
-        logger.error("An error occured when calling declare-files-as-deleted: {}".format(response.text))
+        logger.error("Timeout occurred when calling declare-files-as-deleted: {}".format(str(exc)))
 
 
 def get_progress_async_post_processing(uuid: str, wanted_post_process: str = None):
@@ -313,11 +358,15 @@ def get_progress_async_post_processing(uuid: str, wanted_post_process: str = Non
         base_url=settings.OSIS_DOCUMENT_BASE_URL,
         uuid=uuid,
     )
-    response = requests.post(
-        url,
-        json={'pk': uuid, 'wanted_post_process': wanted_post_process},
-        headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
-    )
+    try:
+        response = requests.post(
+            url,
+            json={'pk': uuid, 'wanted_post_process': wanted_post_process},
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_PROGRESS_ASYNC_POST_PROCESSING_TIMEOUT,
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     return response.json()
 
 
@@ -325,11 +374,15 @@ def change_remote_metadata(token, metadata):
     """Update metadata of a remote document and return the updated metadata if successful."""
     url = "{}change-metadata/{}".format(settings.OSIS_DOCUMENT_BASE_URL, token)
 
-    response = requests.post(
-        url=url,
-        json=metadata,
-        headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
-    )
+    try:
+        response = requests.post(
+            url=url,
+            json=metadata,
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_CHANGE_REMOTE_METADATA_TIMEOUT,
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
     return response.json()
 
 

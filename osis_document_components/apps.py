@@ -23,9 +23,10 @@
 #    see http://www.gnu.org/licenses/.
 #
 # ##############################################################################
+import os
+
 from django.apps import AppConfig
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
 from rest_framework.serializers import ModelSerializer
 
 
@@ -37,3 +38,34 @@ class OsisDocumentComponentsConfig(AppConfig):
         from osis_document_components.fields import FileField
         from osis_document_components.serializers import FileField as FileFieldSerializer
         ModelSerializer.serializer_field_mapping[FileField] = FileFieldSerializer
+
+        settings.OSIS_DOCUMENT_COMPONENTS_SAVE_RAW_CONTENT_REMOTELY_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_SAVE_RAW_CONTENT_REMOTELY_TIMEOUT', 20)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_GET_RAW_CONTENT_REMOTELY_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_GET_RAW_CONTENT_REMOTELY_TIMEOUT', 20)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_METADATA_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_METADATA_TIMEOUT', 5)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_TOKEN_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_GET_REMOTE_TOKEN_TIMEOUT', 5)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_DOCUMENTS_REMOTE_DUPLICATE_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_DOCUMENTS_REMOTE_DUPLICATE_TIMEOUT', 20)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_CONFIRM_REMOTE_UPLOAD_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_CONFIRM_REMOTE_UPLOAD_TIMEOUT', 5)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_LAUNCH_POST_PROCESSING_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_LAUNCH_POST_PROCESSING_TIMEOUT', 60)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_DECLARE_REMOTE_FILES_AS_DELETED_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_DECLARE_REMOTE_FILES_AS_DELETED_TIMEOUT', 2)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_GET_PROGRESS_ASYNC_POST_PROCESSING_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_GET_PROGRESS_ASYNC_POST_PROCESSING_TIMEOUT', 2)
+        )
+        settings.OSIS_DOCUMENT_COMPONENTS_CHANGE_REMOTE_METADATA_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_CHANGE_REMOTE_METADATA_TIMEOUT', 2)
+        )

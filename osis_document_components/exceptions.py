@@ -34,6 +34,10 @@ class SaveRawContentRemotelyException(OSISDocumentAPICallException):
         super().__init__(self.message)
 
 
+class OsisDocumentTimeout(OSISDocumentAPICallException):
+    pass
+
+
 class UploadInvalidException(OSISDocumentAPICallException):
     pass
 
