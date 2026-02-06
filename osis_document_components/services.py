@@ -386,6 +386,36 @@ def change_remote_metadata(token, metadata):
     return response.json()
 
 
+def get_student_files_from_epc(noma: str):
+    """Get students files from EPC according to noma """
+    url = "{}external_storage/EPC/student_files/{}/".format(settings.OSIS_DOCUMENT_BASE_URL, noma)
+
+    try:
+        response = requests.get(
+            url=url,
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_STUDENT_FILES_FROM_EPC_TIMEOUT,
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
+    return response.json()
+
+
+def get_student_files_count_from_epc(noma: str):
+    """Count students files from EPC according to noma """
+    url = "{}external_storage/EPC/student_files/{}/count".format(settings.OSIS_DOCUMENT_BASE_URL, noma)
+
+    try:
+        response = requests.get(
+            url=url,
+            headers={'X-Api-Key': settings.OSIS_DOCUMENT_API_SHARED_SECRET},
+            timeout=settings.OSIS_DOCUMENT_COMPONENTS_GET_STUDENT_FILES_FROM_EPC_TIMEOUT,
+        )
+    except Timeout as exc:
+        raise OsisDocumentTimeout(str(exc)) from exc
+    return response.json()
+
+
 def __stringify_uuid_and_check_uuid_validity(uuid_input: Union[str, UUID]) -> Dict[str, Union[str, bool]]:
     """
     Checks the validity of an uuid and converts it to a string if necessary

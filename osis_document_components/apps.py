@@ -69,3 +69,6 @@ class OsisDocumentComponentsConfig(AppConfig):
         settings.OSIS_DOCUMENT_COMPONENTS_CHANGE_REMOTE_METADATA_TIMEOUT = int(
             os.environ.get('OSIS_DOCUMENT_COMPONENTS_CHANGE_REMOTE_METADATA_TIMEOUT', 2)
         )
+        settings.OSIS_DOCUMENT_COMPONENTS_GET_STUDENT_FILES_FROM_EPC_TIMEOUT = int(
+            os.environ.get('OSIS_DOCUMENT_COMPONENTS_GET_STUDENT_FILES_FROM_EPC_TIMEOUT', 5)
+        )
