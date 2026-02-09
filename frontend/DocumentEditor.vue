@@ -90,10 +90,11 @@
 
       <!-- Saving -->
       <button
+          v-if="save"
           type="button"
           class="btn"
           :class="needsToBeSaved ? 'btn-primary' : 'btn-default disabled'"
-          @click="save"
+          @click="saveDocument"
       >
         <span
             class="fas"
@@ -168,6 +169,14 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    save: {
+      type: Boolean,
+      default: true,
+    },
+    getFileUrl: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -226,10 +235,15 @@ export default defineComponent({
         this.error = this.t('view_entry.file_infected');
       } else {
         try {
-          // Fetch document and inject into viewer
-          const file = await doRequest(`${this.baseUrl}metadata/${this.token}`) as FileUpload;
-          const pdfDocument = await pdfjs.getDocument(file.url).promise;
+          let fileUrl: string;
 
+          if (this.getFileUrl) {
+            fileUrl = this.getFileUrl;
+          } else {
+            const file = await doRequest(`${this.baseUrl}metadata/${this.token}`) as FileUpload;
+            fileUrl = file.url;
+          }
+          const pdfDocument = await pdfjs.getDocument(fileUrl).promise;
           // @ts-ignore bad typing from lib, see https://github.com/mozilla/pdf.js/pull/16362
           const viewer = new PDFViewer({
             container: this.$refs.viewerContainer as HTMLDivElement,
@@ -344,7 +358,7 @@ export default defineComponent({
     updateNeedsToBeSaved() {
       this.hasAnnotations = !!this.pdfDocument && this.pdfDocument.annotationStorage.size > 0;
     },
-    async save() {
+    async saveDocument() {
       if (!this.needsToBeSaved) {
         return false;
       }

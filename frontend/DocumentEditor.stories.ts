@@ -57,11 +57,58 @@ const UploadingServerTemplate: StoryFn<typeof DocumentEditor & {
     setup() {
       return {args};
     },
-    template: '<DocumentEditor v-bind="args" base-url="/" value="12e68184-5cba-4b27-9988-609a6cc3be63" />',
+    template: '<DocumentEditor v-bind="args"  />',
   });
 };
 
 export const Basic = UploadingServerTemplate.bind({});
+Basic.args = {
+  baseUrl: "/",
+  value: "12e68184-5cba-4b27-9988-609a6cc3be63",
+  pagination: true,
+  zoom: true,
+  comment: true,
+  highlight: true,
+  rotation: true,
+  save: true,
+};
+
+
+export const Minimal = UploadingServerTemplate.bind({});
+Minimal.args = {
+  baseUrl: "/",
+  value: "12e68184-5cba-4b27-9988-609a6cc3be63",
+  pagination: false,
+  zoom: false,
+  comment: false,
+  highlight: false,
+  rotation: false,
+  save: false,
+};
+
+
+export const ReadOnly = UploadingServerTemplate.bind({});
+ReadOnly.args = {
+  baseUrl: "/",
+  value: "12e68184-5cba-4b27-9988-609a6cc3be63",
+  pagination: true,
+  zoom: true,
+  comment: false,
+  highlight: false,
+  rotation: true,
+  save: false,
+};
+
+export const CustomFileUrl = UploadingServerTemplate.bind({});
+CustomFileUrl.args = {
+  getFileUrl: '/direct-files/12e68184-5cba-4b27-9988-609a6cc3be63',
+  pagination: true,
+  zoom: true,
+  comment: false,
+  highlight: false,
+  rotation: true,
+  save: false,
+};
 
 export default {
   title: 'DocumentEditor',
