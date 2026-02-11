@@ -38,7 +38,7 @@ export default {
   upload_entry: {
     completion: '{progress}% uploaded',
     too_large: 'File is too large',
-    wrong_type: 'The file must have the following type: "{types}" | The file must have one of the following types: "{types}"',
+    wrong_type: 'The file must have the following type: "{types}"; any other files will not be saved. | The file must have one of the following types: "{types}"; any other files will not be saved.',
     crop_header: 'Please choose the part you want to keep.',
     crop: 'Crop',
     cancel: 'Cancel',
