@@ -213,7 +213,10 @@ export default defineComponent({
     if (this.maxSize && this.file.size > this.maxSize) {
       this.error = this.t('upload_entry.too_large');
     } else if (this.mimetypes.length && !this.mimetypes.includes(this.file.type)) {
-      this.error = this.t('upload_entry.wrong_type', {types: this.mimetypes.join(', ')});
+      this.error = this.t('upload_entry.wrong_type', {
+        types: this.mimetypes.join(', '),
+        count: this.mimetypes.length
+      });
     } else if (this.automatic && !this.withCropping) {
       this.sendFile();
     } else if (!this.withCropping) {
