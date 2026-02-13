@@ -38,7 +38,7 @@ export default {
   upload_entry: {
     completion: '{progress}% transférés',
     too_large: 'Le fichier est trop lourd',
-    wrong_type: 'Le fichier doit être du type "{types}" | Le fichier doit être d\'un des types suivants : "{types}"',
+    wrong_type: 'Le fichier doit être du type "{types}"; tout autre fichier ne sera pas sauvegardé. | Le fichier doit être d\'un des types suivants : "{types}"; tout autre fichier ne sera pas sauvegardé.',
     crop_header: 'Veuillez choisir la partie à garder.',
     crop: 'Recadrer',
     cancel: 'Annuler',
