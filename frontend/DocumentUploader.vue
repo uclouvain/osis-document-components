@@ -213,14 +213,14 @@ export default defineComponent({
     dragNDropLabel: function () {
       if (this.minFiles) {
         if (this.minFiles === this.maxFiles) {
-          return this.t('uploader.specific_nb_drag_n_drop_label', this.minFiles);
+          return this.t('uploader.specific_nb_drag_n_drop_label', {count: this.minFiles});
         } else if (this.maxFiles) {
           return this.t('uploader.min_max_drag_n_drop_label', {min: this.minFiles, max: this.maxFiles});
         } else {
-          return this.t('uploader.min_drag_n_drop_label', this.minFiles);
+          return this.t('uploader.min_drag_n_drop_label', {count: this.minFiles});
         }
       } else if (this.maxFiles) {
-        return this.t('uploader.max_drag_n_drop_label', this.maxFiles);
+        return this.t('uploader.max_drag_n_drop_label', {count: this.maxFiles});
       }
       return this.t('uploader.drag_n_drop_label');
     },
